@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/dish")
-@Api("菜品相关接口")
+@Api(tags = "菜品相关接口")
 @Slf4j
 public class DishController {
 
@@ -83,15 +83,30 @@ public class DishController {
     /*
     * 根据id修改菜品及其口味
     * */
-    @GetMapping
+    @PutMapping
     @ApiOperation("修改菜品及其口味")
-    public Result update(DishDTO dishDTO) {
+    public Result update(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品及其口味：{}",dishDTO);
 
         dishService.update(dishDTO);
 
         return Result.success();
     }
+
+    /*
+    * 根据分类id查询菜品
+    * */
+    @GetMapping("/list")
+    @ApiOperation("根据分类id查询菜品")
+    public Result<List<Dish>> list(Long categoryId) {
+        log.info("根据分类id查询菜品：{}",categoryId);
+
+        List<Dish> dishs = dishService.getByCategoryId(categoryId);
+
+        return Result.success(dishs);
+    }
+
+
 }
 
 

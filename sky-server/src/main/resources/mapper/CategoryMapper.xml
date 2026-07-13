@@ -20,22 +20,22 @@
         update category
         <set>
             <if test="type != null">
-                type = #{type},
+                and type = #{type}
             </if>
             <if test="name != null">
-                name = #{name},
+                and name = #{name}
             </if>
             <if test="sort != null">
-                sort = #{sort},
+                and sort = #{sort}
             </if>
             <if test="status != null">
-                status = #{status},
+                and status = #{status}
             </if>
             <if test="updateTime != null">
-                update_time = #{updateTime},
+                and update_time = #{updateTime}
             </if>
             <if test="updateUser != null">
-                update_user = #{updateUser}
+                and update_user = #{updateUser}
             </if>
         </set>
         where id = #{id}

@@ -184,4 +184,16 @@ public class DishServiceImpl implements DishService {
 
         return dishVOList;
     }
+
+    /*
+    * 起售or停售菜品
+    * */
+    public void startOrStop(Integer status,Long id) {
+        Dish dish = dishMapper.getById(id);
+        DishDTO dishDTO = new DishDTO();
+        dish.setStatus(status);
+        BeanUtils.copyProperties(dish, dishDTO);
+
+        dishMapper.update(dish);
+    }
 }

@@ -3,6 +3,9 @@ package com.sky.controller.notify;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sky.context.BaseContext;
+import com.sky.entity.Orders;
+import com.sky.mapper.OrderMapper;
 import com.sky.properties.WeChatProperties;
 import com.sky.service.OrderService;
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
@@ -16,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * 支付回调相关接口
@@ -34,19 +38,27 @@ public class PayNotifyController {
      *
      * @param request
      */
+
+
     @RequestMapping("/paySuccess")
     public void paySuccessNotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         //读取数据
         String body = readData(request);
         log.info("支付成功回调：{}", body);
 
-        //数据解密
+
+        //TODO: 有商户号可解密
+        //无商户号，自己补全数据
+        String outTradeNo = orderService.getId(BaseContext.getCurrentId()) + "";
+        String transactionId = UUID.randomUUID().toString();
+
+        /*//数据解密
         String plainText = decryptData(body);
         log.info("解密后的文本：{}", plainText);
 
         JSONObject jsonObject = JSON.parseObject(plainText);
         String outTradeNo = jsonObject.getString("out_trade_no");//商户平台订单号
-        String transactionId = jsonObject.getString("transaction_id");//微信支付交易号
+        String transactionId = jsonObject.getString("transaction_id");//微信支付交易号*/
 
         log.info("商户平台订单号：{}", outTradeNo);
         log.info("微信支付交易号：{}", transactionId);

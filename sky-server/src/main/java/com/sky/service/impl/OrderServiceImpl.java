@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.sky.utils.BaiduMapUtil;
 
 @Service
 @Slf4j
@@ -61,6 +62,16 @@ public class OrderServiceImpl implements OrderService {
         if (addressBook == null) {
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         }
+
+        /*//判断下单地址和商家地址的距离
+        String address = addressBook.getProvinceName()
+                + addressBook.getCityName()
+                +addressBook.getDistrictName()
+                + addressBook.getDetail();
+        BaiduMapUtil baiduMapUtil = new BaiduMapUtil();
+        if(!baiduMapUtil.checkDistance(address)){
+            throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_FAR);
+        }*/
 
         ShoppingCart shoppingCart = ShoppingCart.builder()
                 .userId(BaseContext.getCurrentId())
@@ -512,11 +523,11 @@ public class OrderServiceImpl implements OrderService {
         OrderStatisticsVO orderStatisticsVO = new  OrderStatisticsVO();
 
         //统计待接单数量
-        orderStatisticsVO.setToBeConfirmed(orderMapper.toBeConfirmed(Orders.TO_BE_CONFIRMED));
+        orderStatisticsVO.setToBeConfirmed(orderMapper.countOrder(Orders.TO_BE_CONFIRMED));
         //统计待派送数量
-        orderStatisticsVO.setConfirmed(orderMapper.confirmed(Orders.CONFIRMED));
+        orderStatisticsVO.setConfirmed(orderMapper.countOrder(Orders.CONFIRMED));
         //统计派送中数量
-        orderStatisticsVO.setDeliveryInProgress(orderMapper.deliveryInProgress(Orders.DELIVERY_IN_PROGRESS));
+        orderStatisticsVO.setDeliveryInProgress(orderMapper.countOrder(Orders.DELIVERY_IN_PROGRESS));
 
         return orderStatisticsVO;
     }

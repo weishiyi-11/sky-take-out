@@ -8,6 +8,9 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Mapper
 public interface OrderMapper {
 
@@ -43,21 +46,20 @@ public interface OrderMapper {
     Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
     /*
-    * 根据id查看订单
+    * 根据订单id查看订单
     * */
     @Select("select * from orders where id = #{id}")
     Orders getById(Long id);
 
 
-    //统计待接单数量
+    //根据状态统计订单数量
     @Select("select count(*) from orders where status = #{status}")
-    Integer toBeConfirmed(Integer status);
+    Integer countOrder(Integer status);
 
-    //统计待派送数量
-    @Select("select count(*) from orders where status = #{status}")
-    Integer confirmed(Integer status);
 
-    //统计派送中数量
-    @Select("select count(*) from orders where status = #{status}")
-    Integer deliveryInProgress(Integer status);
+    //查询过期订单
+    @Select("select * from orders where status = #{status} and order_time < #{time}")
+    List<Orders> processOrderTime(Integer status, LocalDateTime time);
+
+
 }

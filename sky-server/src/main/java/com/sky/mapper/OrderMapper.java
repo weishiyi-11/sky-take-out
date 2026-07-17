@@ -62,4 +62,8 @@ public interface OrderMapper {
     List<Orders> processOrderTime(Integer status, LocalDateTime time);
 
 
+    /*
+    *营业额数据统计
+    * */
+    Double sumAmount(LocalDateTime beginTime, LocalDateTime endTime,Integer status);
 }

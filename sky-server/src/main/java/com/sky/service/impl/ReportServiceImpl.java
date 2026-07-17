@@ -1,10 +1,12 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.lang.StringUtils;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -127,7 +130,6 @@ public class ReportServiceImpl implements ReportService {
             dateList.add(begin);
         }
 
-
         List<Integer> totalOrderList = new ArrayList<>();
         List<Integer> completeOrderList = new ArrayList<>();
         //总共订单
@@ -136,8 +138,6 @@ public class ReportServiceImpl implements ReportService {
         Integer complete = 0;
         //完成率
         Double completeRate = 0.0;
-
-
 
         for(LocalDate date:dateList){
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
@@ -175,5 +175,28 @@ public class ReportServiceImpl implements ReportService {
                 .build();
 
         return orderReportVO;
+    }
+
+    /*
+    * 销量排名统计
+    * */
+    public SalesTop10ReportVO getSalesReport(LocalDate begin, LocalDate end) {
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+
+        List<GoodsSalesDTO> list = orderMapper.getTop10(beginTime,endTime);
+
+        //获取商品名称
+        List<String> names = list.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
+        //获取商品销量
+        List<Integer> sales = list.stream().map(GoodsSalesDTO::getNumber).collect(Collectors.toList());
+
+        SalesTop10ReportVO salesTop10ReportVO = SalesTop10ReportVO
+                .builder()
+                .nameList(StringUtils.join(names,","))
+                .numberList(StringUtils.join(sales,","))
+                .build();
+
+        return salesTop10ReportVO;
     }
 }

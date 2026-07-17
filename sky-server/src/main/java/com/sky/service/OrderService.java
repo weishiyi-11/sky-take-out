@@ -91,4 +91,9 @@ public interface OrderService {
     * 各个状态的订单数量统计
     * */
     OrderStatisticsVO getStatistics();
+
+    /*
+    * 用户催单
+    * */
+    void reminder(Long id);
 }

@@ -49,7 +49,8 @@ public class PayNotifyController {
 
         //TODO: 有商户号可解密
         //无商户号，自己补全数据
-        String outTradeNo = orderService.getId(BaseContext.getCurrentId()) + "";
+        Long userId = BaseContext.getCurrentId();
+        String outTradeNo = orderService.getId(userId) + "";
         String transactionId = UUID.randomUUID().toString();
 
         /*//数据解密

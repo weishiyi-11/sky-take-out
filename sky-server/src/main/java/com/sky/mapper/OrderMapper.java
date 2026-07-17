@@ -38,7 +38,7 @@ public interface OrderMapper {
     * 根据用户id查询订单号
     * */
     @Select("select number from orders where user_id = #{userId} and status = 1")
-    Long getIdByUserId(Long currentId);
+    Long getIdByUserId(Long userId);
 
     /*
     * 查看历史订单

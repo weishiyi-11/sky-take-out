@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,8 @@ public class SetmealController {
 
     @Autowired
     private SetmealService setmealService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     /*
@@ -111,8 +114,18 @@ public class SetmealController {
 
         setmealService.startOrStop(status,id);
 
+        //清理Redis缓存
+        String key = "setmealCache:setmeal_" +  id;
+        cleanCache(key);
 
         return Result.success();
+    }
+
+    /*
+     * 清理Redis缓存数据
+     * */
+    private void cleanCache(String pattern) {
+        redisTemplate.delete(redisTemplate.keys(pattern));
     }
 
 

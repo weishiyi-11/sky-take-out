@@ -38,13 +38,10 @@ public class DishController {
     * */
     @PostMapping
     @ApiOperation("新增菜品")
+    @CacheEvict(cacheNames = "dishCache",allEntries = true)
     public Result save(@RequestBody DishDTO dishDTO) {
         log.info("新增菜品：{}", dishDTO);
         dishService.saveWithFlavor(dishDTO);
-
-        //清理Redis缓存
-        String key = "dish_" +  dishDTO.getCategoryId();
-        cleanCache(key);
 
         return Result.success();
     }
@@ -67,13 +64,11 @@ public class DishController {
     * */
     @DeleteMapping
     @ApiOperation("批量删除菜品")
+    @CacheEvict(cacheNames = "dishCache",allEntries = true)
     public Result deleteById(@RequestParam List<Long> ids) {
         log.info("批量删除菜品：{}",ids);
 
         dishService.deleteById(ids);
-
-        //清理Redis缓存
-        cleanCache("dish_*");
 
         return Result.success();
     }
@@ -103,9 +98,6 @@ public class DishController {
 
         dishService.update(dishDTO);
 
-        //清理Redis缓存
-        cleanCache("dish_*");
-
         return Result.success();
     }
 
@@ -127,13 +119,11 @@ public class DishController {
     * */
     @PostMapping("/status/{status}")
     @ApiOperation("起售，停售菜品")
+    @CacheEvict(cacheNames = "dishCache",allEntries = true)
     public Result updateStatus(@PathVariable Integer status, Long id) {
         log.info("起售or停售菜品{}: {}",id,status);
 
         dishService.startOrStop(status,id);
-
-        //清理Redis缓存
-        cleanCache("dish_*");
 
         return Result.success();
     }

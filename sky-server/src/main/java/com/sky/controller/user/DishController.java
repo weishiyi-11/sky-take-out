@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @RestController("userDishController")
 @RequestMapping("/user/dish")
@@ -28,6 +30,11 @@ public class DishController {
     private DishService dishService;
     @Autowired
     private BloomFilter<Long> dishBloomFilter;
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    private static final int BASE_TTL_MINUTES = 30;
+    private static final int RANDOM_TTL_MINUTES = 10;
 
     /**
      * 根据分类id查询菜品
@@ -37,7 +44,6 @@ public class DishController {
      */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
-    @Cacheable(cacheNames = "dishCache",key = "#categoryId")
     public Result<List<DishVO>> list(Long categoryId) {
         log.info("根据分类id查询菜品：{}", categoryId);
 
@@ -46,11 +52,24 @@ public class DishController {
             return Result.error(MessageConstant.CATEGORYID_IS_ERROR); // 一定不存在，直接返回，不查缓存也不查 DB
         }
 
+        //构建Redis的key
+        String key = "dishCache::category_" + categoryId;
+
+        //查询Redis，如果Redis不存在才去查询数据库
+        List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key);
+        if (list != null && list.size() >= 0) {
+            return Result.success(list);
+        }
+
         Dish dish = new Dish();
         dish.setCategoryId(categoryId);
         dish.setStatus(StatusConstant.ENABLE);//查询起售中的菜品
 
-        List<DishVO> list = dishService.listWithFlavor(dish);
+        list = dishService.listWithFlavor(dish);
+
+        // 随机 TTL：30分钟 ~ 40分钟
+        int ttl = BASE_TTL_MINUTES + ThreadLocalRandom.current().nextInt(0, RANDOM_TTL_MINUTES);
+        redisTemplate.opsForValue().set(key, list, ttl, TimeUnit.MINUTES);
 
         return Result.success(list);
     }

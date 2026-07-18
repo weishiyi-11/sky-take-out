@@ -1,5 +1,7 @@
 package com.sky.controller.user;
 
+import com.google.common.hash.BloomFilter;
+import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.entity.Dish;
 import com.sky.result.Result;
@@ -24,6 +26,8 @@ public class DishController {
     private DishService dishService;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private BloomFilter<Long> dishBloomFilter;
 
     /**
      * 根据分类id查询菜品
@@ -35,6 +39,11 @@ public class DishController {
     @ApiOperation("根据分类id查询菜品")
     public Result<List<DishVO>> list(Long categoryId) {
         log.info("根据分类id查询菜品：{}", categoryId);
+
+        // 布隆过滤器判断
+        if (!dishBloomFilter.mightContain(categoryId)) {
+            return Result.error(MessageConstant.CATEGORYID_IS_ERROR); // 一定不存在，直接返回，不查缓存也不查 DB
+        }
 
         //构建Redis中的key
         String key = "dish_" +  categoryId;

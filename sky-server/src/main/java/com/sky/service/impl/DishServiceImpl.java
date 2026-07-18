@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.hash.BloomFilter;
 import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
@@ -35,6 +36,8 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private BloomFilter<Long> dishBloomFilter;
 
 
     /*
@@ -106,6 +109,7 @@ public class DishServiceImpl implements DishService {
     * */
     @Override
     public DishVO getByIdWithFlavor(Long dishId) {
+
         DishVO dishVO = new DishVO();
 
         //查询菜品

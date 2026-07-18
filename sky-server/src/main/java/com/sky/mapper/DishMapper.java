@@ -71,4 +71,10 @@ public interface DishMapper {
      * @return
      */
     Integer countByMap(Map map);
+
+    /*
+    * 加载所有有效菜品 ID 到布隆过滤器
+    * */
+    @Select("select * from dish")
+    List<Dish> getAllDishs();
 }

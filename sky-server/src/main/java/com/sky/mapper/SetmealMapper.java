@@ -76,4 +76,10 @@ public interface SetmealMapper {
      * @return
      */
     Integer countByMap(Map map);
+
+    /*
+    * 加载所有有效套餐 ID 到布隆过滤器
+    * */
+    @Select("select * from setmeal")
+    List<Setmeal> getAllSetmeal();
 }

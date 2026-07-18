@@ -84,7 +84,7 @@ public class AddressBookController {
      * @param id
      * @return
      */
-    @DeleteMapping
+    @DeleteMapping({"","/"})
     @ApiOperation("根据id删除地址")
     public Result deleteById(Long id) {
         addressBookService.deleteById(id);

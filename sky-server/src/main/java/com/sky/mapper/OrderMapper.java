@@ -70,7 +70,7 @@ public interface OrderMapper {
     Double sumAmount(Map map);
 
     /*
-    * 统计当天订单数量
+    * 统计订单数量
     * */
     Integer countOrders(Map map);
 

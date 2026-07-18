@@ -1,5 +1,7 @@
 package com.sky.controller.user;
 
+import com.google.common.hash.BloomFilter;
+import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.entity.Setmeal;
 import com.sky.result.Result;
@@ -19,8 +21,11 @@ import java.util.List;
 @RequestMapping("/user/setmeal")
 @Api(tags = "C端-套餐浏览接口")
 public class SetmealController {
+
     @Autowired
     private SetmealService setmealService;
+    @Autowired
+    private BloomFilter<Long> dishBloomFilter;
 
     /**
      * 条件查询
@@ -48,7 +53,14 @@ public class SetmealController {
      */
     @GetMapping("/dish/{id}")
     @ApiOperation("根据套餐id查询包含的菜品列表")
+    @Cacheable(cacheNames = "setmealDishCache",key = "#id")
     public Result<List<DishItemVO>> dishList(@PathVariable("id") Long id) {
+
+        // 布隆过滤器判断
+        if (!dishBloomFilter.mightContain(id)) {
+            return Result.error(MessageConstant.SETMEALID_IS_ERROR); // 一定不存在，直接返回，不查缓存也不查 DB
+        }
+
         List<DishItemVO> list = setmealService.getDishItemById(id);
         return Result.success(list);
     }

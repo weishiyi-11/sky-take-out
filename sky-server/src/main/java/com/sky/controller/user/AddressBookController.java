@@ -97,7 +97,6 @@ public class AddressBookController {
     @GetMapping("default")
     @ApiOperation("查询默认地址")
     public Result<AddressBook> getDefault() {
-        //SQL:select * from address_book where user_id = ? and is_default = 1
         AddressBook addressBook = new AddressBook();
         addressBook.setIsDefault(1);
         addressBook.setUserId(BaseContext.getCurrentId());

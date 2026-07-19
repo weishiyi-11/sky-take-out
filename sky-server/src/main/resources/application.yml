@@ -61,7 +61,4 @@ sky:
     weChatPayCertFilePath: ${sky.wechat.weChatPayCertFilePath}
     notifyUrl: ${sky.wechat.notifyUrl}
     refundNotifyUrl: ${sky.wechat.refundNotifyUrl}
-  shop:
-    address: ${sky.shop.adress}
-  baidu:
-    ak: ${sky.baidu.ak}
+

@@ -1,13 +1,3 @@
----
-AIGC:
-    Label: "1"
-    ContentProducer: 001191110102MACQD9K64018705
-    ProduceID: 142305146964284_0/project_7663742609780637995-files/README.md
-    ReservedCode1: ""
-    ContentPropagator: 001191110102MACQD9K64028705
-    PropagateID: 142305146964284#1784434774111
-    ReservedCode2: ""
----
 # 苍穹外卖 - Spring Boot 外卖系统
 
 基于 Spring Boot 的企业级外卖平台后端系统，涵盖菜品管理、套餐管理、订单管理、用户管理、实时消息推送等核心业务功能，并在原有基础上进行了多项性能优化与安全增强。

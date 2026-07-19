@@ -56,7 +56,7 @@ sky-take-out
 
 ### 1. 员工管理
 - 员工登录/登出（JWT 认证）
-- 密码加密（BCrypt，自带随机盐防彩虹表攻击）
+- 密码加密（MD5 摘要加密）
 - 员工信息 CRUD
 
 ### 2. 菜品管理
@@ -108,31 +108,25 @@ sky-take-out
 **实现思路：**
 
 1. **缓存穿透** — 使用 Guava BloomFilter 对查询 ID 进行预检：
-    - 新增/修改数据时，同步将 ID 写入布隆过滤器
-    - 查询时先检查布隆过滤器，若 ID 不存在则直接返回，避免无效请求穿透到数据库
+    - 查询时先检查布隆过滤器，若 ID 不存在则直接返回错误，不查缓存也不查 DB
+    - 分别为菜品 ID 和套餐 ID 创建独立的布隆过滤器（预期数据量 1000/500，误判率 1%）
 
-2. **缓存雪崩** — 为缓存 TTL 添加随机偏移量：
+2. **缓存雪崩** — 为缓存 TTL 添加随机偏移量，避免大量 Key 同时过期：
    ```java
-   // 基础 TTL + 随机偏移（0~120分钟），避免大量 Key 同时过期
-   long randomSeconds = new Random().nextLong(120 * 60);
-   long ttl = baseTTL + randomSeconds;
+   private static final int BASE_TTL_MINUTES = 30;
+   private static final int RANDOM_TTL_MINUTES = 10;
+
+   // 随机 TTL：30分钟 ~ 40分钟
+   int ttl = BASE_TTL_MINUTES + ThreadLocalRandom.current().nextInt(0, RANDOM_TTL_MINUTES);
+   redisTemplate.opsForValue().set(key, list, ttl, TimeUnit.MINUTES);
    ```
 
 ### 安全增强
 
 | 优化项 | 方案 |
 |--------|------|
-| 密码加密 | MD5 → BCrypt，自带随机盐，防彩虹表和批量破解 |
+| 密码加密 | MD5 摘要加密，防止明文泄露 |
 | 接口文档 | Knife4j 自动生成 API 文档 |
-
-**密码加密升级说明：**
-
-| 对比项 | MD5 | BCrypt |
-|--------|-----|--------|
-| 盐值 | 需手动管理 | 自动生成随机盐 |
-| 抗暴力破解 | 弱（GPU 可高速破解） | 强（慢哈希算法，计算成本高） |
-| 彩虹表 | 易被攻击 | 完全免疫 |
-| 行业标准 | 已淘汰 | Spring Security 默认推荐 |
 
 ### 业务优化
 

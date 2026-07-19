@@ -51,6 +51,8 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private WebSocketServer webSocketServer;
+    @Autowired
+    private BaiduMapUtil  baiduMapUtil;
 
 
     /*
@@ -65,15 +67,14 @@ public class OrderServiceImpl implements OrderService {
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         }
 
-        /*//判断下单地址和商家地址的距离
+        //判断下单地址和商家地址的距离
         String address = addressBook.getProvinceName()
                 + addressBook.getCityName()
                 +addressBook.getDistrictName()
                 + addressBook.getDetail();
-        BaiduMapUtil baiduMapUtil = new BaiduMapUtil();
         if(!baiduMapUtil.checkDistance(address)){
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_FAR);
-        }*/
+        }
 
         ShoppingCart shoppingCart = ShoppingCart.builder()
                 .userId(BaseContext.getCurrentId())

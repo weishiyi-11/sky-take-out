@@ -26,7 +26,7 @@ public class BaiduMapUtil {
             // 地址必须编码，否则中文报错
             String encodeAddress = URLEncoder.encode(address, StandardCharsets.UTF_8.name());
 
-            String url = "https://api.map.baidu.com/geocoding/v3/"
+            String url = "https://api.map.baidu.com/geocoding/v3"
                     + "?address=" + encodeAddress
                     + "&output=json"
                     + "&ak=" + ak;
@@ -34,10 +34,13 @@ public class BaiduMapUtil {
             String json = restTemplate.getForObject(url, String.class);
             JSONObject result = JSONObject.parseObject(json);
 
+            System.out.println("百度地图API返回：" + json);
+
             // 判断接口是否调用成功
             int status = result.getIntValue("status");
             if (status != 0) {
-                throw new RuntimeException("百度地图接口异常：" + result.getString("message"));
+
+                throw new RuntimeException("百度地图接口异常：" + result.getString("msg"));
             }
 
             JSONObject res = result.getJSONObject("result");
@@ -54,7 +57,7 @@ public class BaiduMapUtil {
      */
     public double getDistance(String origin, String destination) {
         try {
-            String url = "https://api.map.baidu.com/directionlite/v1/riding"
+            String url = "https://api.map.baidu.com/directionlite/v2/riding"
                     + "?origin=" + origin
                     + "&destination=" + destination
                     + "&ak=" + ak;
